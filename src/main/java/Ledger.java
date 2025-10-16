@@ -106,27 +106,18 @@ public class Ledger {
     // Save a single transaction to CSV
 
     private void saveTransaction(Transaction t) {
-        try {
-            File file = new File(FILE_NAME);
-            boolean fileExists = file.exists();
-
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
-                // Add a newline only if file already has data
-                if (fileExists && file.length() > 0) {
-                    bw.newLine();
-                }
-
-                bw.write(String.format("%s|%s|%s|%s|%.2f",
-                        t.getDate(),
-                        t.getTime().withNano(0), // removes nanoseconds
-                        t.getDescription(),
-                        t.getVendor(),
-                        t.getAmount()));
-            }
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME, true))) {
+            bw.write(String.format("%s|%s|%s|%s|%.2f%n",
+                    t.getDate(),
+                    t.getTime().withNano(0), // removes nanoseconds
+                    t.getDescription(),
+                    t.getVendor(),
+                    t.getAmount()));
         } catch (IOException e) {
             System.out.println("❌ Error saving transaction: " + e.getMessage());
         }
     }
+
 
 
 

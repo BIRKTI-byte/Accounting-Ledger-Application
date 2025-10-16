@@ -3,12 +3,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.format.DateTimeFormatter;
+
 
 //The Ledger class manages a list of financial transactions (deposits and payments),
 // saves them to a CSV file, and loads them when the program starts.
 public class Ledger {
     private List<Transaction> transactions = new ArrayList<>();
     private static final String FILE_NAME = "Transaction.csv";
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     // Constructor: load existing transactions
     public Ledger() {
@@ -35,7 +38,12 @@ public class Ledger {
     public void displayAll() {
         displayHeader();
         for (Transaction t : transactions) {
-            System.out.println(t);
+            System.out.printf("%-12s | %-8s | %-20s | %-10s | %10.2f%n",
+                    t.getDate(),
+                    t.getTime().format(TIME_FORMATTER),
+                    t.getDescription(),
+                    t.getVendor(),
+                    t.getAmount());
         }
     }
 
@@ -46,7 +54,7 @@ public class Ledger {
         System.out.println("-------------------------------------------------------------");
     }
 
-    // Search transactions by vendor and is case insensentive
+    // Search transactions by vendor and is case insensentive. I have to get back to this
     public void searchByVendor(String vendor) {
         displayHeader();
         for (Transaction t : transactions) {
@@ -61,13 +69,29 @@ public class Ledger {
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String line;
             br.readLine(); // skip the header part
+
             while ((line = br.readLine()) != null) {
+                line = line.trim(); // Remove extra spaces
+
+                // Skip completely empty or broken lines
+                if (line.isEmpty()) continue;
+
                 String[] parts = line.split("\\|");
-                LocalDate date = LocalDate.parse(parts[0]);
-                LocalTime time = LocalTime.parse(parts[1]);
-                String description = parts[2];
-                String vendor = parts[3];
-                double amount = Double.parseDouble(parts[4]);
+
+                // Make sure the line has all 5 parts before parsing
+                if (parts.length < 5) continue;
+
+                // Trim each value to prevent spacing errors
+                String dateStr = parts[0].trim();
+                String timeStr = parts[1].trim();
+                String description = parts[2].trim();
+                String vendor = parts[3].trim();
+                String amountStr = parts[4].trim();
+
+                // Parse date, time, and amount safely
+                LocalDate date = LocalDate.parse(dateStr);
+                LocalTime time = LocalTime.parse(timeStr);
+                double amount = Double.parseDouble(amountStr);
 
                 Transaction t = new Transaction(date, time, description, vendor, amount);
                 transactions.add(t);
@@ -87,23 +111,23 @@ public class Ledger {
             boolean fileExists = file.exists();
 
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(file, true))) {
-                // If file already has data and does not end with a newline, add one
+                // Add a newline only if file already has data
                 if (fileExists && file.length() > 0) {
                     bw.newLine();
                 }
+
                 bw.write(String.format("%s|%s|%s|%s|%.2f",
-                        t.getDate(), t.getTime(), t.getDescription(), t.getVendor(), t.getAmount()));
-                //can be replaced by bw.write(String.format("%s|%s|%s|%s|%.2f\n",
-                //        t.getDate(),
-                //        t.getTime().withNano(0),
-                //        t.getDescription(),
-                //        t.getVendor(),
-                //        t.getAmount())); to remove the nano seconds
+                        t.getDate(),
+                        t.getTime().withNano(0), // removes nanoseconds
+                        t.getDescription(),
+                        t.getVendor(),
+                        t.getAmount()));
             }
         } catch (IOException e) {
             System.out.println("❌ Error saving transaction: " + e.getMessage());
         }
     }
+
 
 
     // Provide access to the transaction list

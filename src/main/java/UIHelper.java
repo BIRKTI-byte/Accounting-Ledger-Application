@@ -2,7 +2,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
-//It handles input validation, formatted prompts, and visual enhancements such as headers and dividers for a cleaner UI
+//It handles  input validation, formatted prompts, and visual enhancements such as headers and dividers for a cleaner UI
 public class UIHelper {
     private static final Scanner scanner = new Scanner(System.in);
 

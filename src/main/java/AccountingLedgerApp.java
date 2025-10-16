@@ -7,7 +7,6 @@ public class AccountingLedgerApp {
         Report report = new Report();
 
         boolean isRunning = true;
-
         while (isRunning) {
             // Display Home Menu with header
             UIHelper.printHeader("🏠 HOME MENU");

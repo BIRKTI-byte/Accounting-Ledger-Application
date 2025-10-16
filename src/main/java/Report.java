@@ -50,6 +50,7 @@ public class Report {
             }
         }
 
+
         printTotals(totalDeposits, totalPayments);
     }
 

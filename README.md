@@ -67,6 +67,7 @@ public void customSearch(List<Transaction> transactions, LocalDate startDate, Lo
 
 ![test](screenshots/test.png)
 ![Make-payment](screenshots/Make-payment.png)
-![custom-search](screenshots/custom-search.png)
 ![custom1search](screenshots/custom1search.png)
+![custom-search](screenshots/custom-search.png)
+
 
